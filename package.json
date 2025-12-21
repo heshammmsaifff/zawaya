@@ -9,9 +9,18 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@heroicons/react": "^2.2.0",
+    "@supabase/supabase-js": "^2.89.0",
+    "framer-motion": "^12.23.26",
+    "gsap": "^3.14.2",
+    "lucide-react": "^0.562.0",
+    "motion": "^12.23.26",
     "next": "16.1.0",
     "react": "19.2.3",
-    "react-dom": "19.2.3"
+    "react-dom": "19.2.3",
+    "react-icons": "^5.5.0",
+    "sweetalert2": "^11.26.10",
+    "sweetalert2-react-content": "^5.1.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
