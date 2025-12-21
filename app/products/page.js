@@ -9,7 +9,7 @@ export default function ProductsPage() {
   return (
     <main className="bg-[#f6f1ea]">
       {/* زر العودة السريع */}
-      <div className="mb-6 pt-20">
+      <div className="mb-6 pt-30 pr-10">
         <Link
           href="/"
           className="inline-flex items-center gap-2 text-gray-500 hover:text-[#634f0e] transition-colors group"

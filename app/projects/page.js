@@ -57,7 +57,7 @@ export default function ProjectsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#fafafa] py-20 px-6 sm:px-12" dir="rtl">
+    <div className="min-h-screen bg-[#fafafa] py-30 px-6 sm:px-12" dir="rtl">
       {/* زر العودة السريع */}
       <div className="mb-6">
         <Link

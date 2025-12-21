@@ -84,7 +84,7 @@ export default function ProjectDetails() {
   if (!project) return null;
 
   return (
-    <div className="min-h-screen bg-[#fafafa] pb-20 pt-10" dir="rtl">
+    <div className="min-h-screen bg-[#fafafa] pb-20 pt-20" dir="rtl">
       <div className="max-w-5xl mx-auto px-6">
         {/* زر العودة السريع */}
         <div className="mb-6 mt-10">

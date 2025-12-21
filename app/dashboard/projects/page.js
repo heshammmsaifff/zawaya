@@ -209,7 +209,7 @@ export default function ProjectsDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f8f9fa] py-8 px-4" dir="rtl">
+    <div className="min-h-screen bg-[#f8f9fa] py-8 pt-30 px-4" dir="rtl">
       <div className="max-w-4xl mx-auto space-y-10">
         {/* Header */}
         <div className="flex justify-between items-center bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100">
