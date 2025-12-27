@@ -43,7 +43,7 @@ const Navbar = () => {
               {/* استبدل هذا بـ img الخاص بك - وضعت نصاً جمالياً كمثال */}
               <div className="flex flex-col items-start leading-none">
                 <img
-                  src="/logo.png"
+                  src="/logo-nav-2.png"
                   alt="Logo"
                   className="w-12 md:w-12 rounded-2xl drop-shadow-2xl"
                 />

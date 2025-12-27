@@ -30,9 +30,9 @@ export default function Footer() {
             transition={{ duration: 0.6 }}
           >
             <Image
-              src="/logo.png"
+              src="/logo-z-11.png"
               alt="Zawaya"
-              width={140}
+              width={180}
               height={60}
               className="mb-6 rounded-[50px]"
             />

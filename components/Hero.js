@@ -1,7 +1,6 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-// import { FaWhatsapp } from "react-icons/fa";
 import React, { useState } from "react";
 
 const HeroSection = () => {
@@ -79,9 +78,9 @@ const HeroSection = () => {
             className="flex justify-center md:justify-start order-1 md:order-2 md:mr-19"
           >
             <img
-              src="/logo.png"
+              src="/logo-z-3.png"
               alt="Logo"
-              className="w-[280px] md:w-[380px] rounded-full drop-shadow-2xl"
+              className="w-[280px] md:w-[990px] rounded-full drop-shadow-2xl"
             />
           </motion.div>
         </div>
