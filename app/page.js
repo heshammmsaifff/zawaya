@@ -1,5 +1,5 @@
 import Hero from "@/components/Hero";
-// import Loop1 from "@/components/Loop1";
+import Loop1 from "@/components/Loop1";
 import FeaturedProjects from "@/components/FeaturedProjects";
 import WhyZawaya from "@/components/WhyZawaya";
 import WorkflowSection from "@/components/WorkflowSection";
@@ -10,7 +10,7 @@ export default function Home() {
   return (
     <>
       <Hero />
-      {/* <Loop1 /> */}
+      <Loop1 />
       <WhyZawaya />
       <FeaturedProjects />
       <WorkflowSection />

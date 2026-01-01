@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import React from "react";
 import {
   FaRulerCombined,
   FaDraftingCompass,
@@ -10,37 +11,37 @@ import {
 
 const steps = [
   {
-    title: "المعاينة و القياس",
-    desc: "نحدد المساحات بدقة ونفهم احتياجك بالكامل.",
+    title: "المعاينة ورفع المقاسات",
+    desc: "نبدأ بزيارة ميدانية لدراسة المساحة، الإضاءة، وتفاصيل المكان لضمان دقة تنفيذ تصل إلى الميليمتر.",
     icon: <FaRulerCombined />,
   },
   {
-    title: "التصميم ثلاثي الأبعاد",
-    desc: "نقدملك تصور 3D واقعي قبل التنفيذ.",
+    title: "رؤية المستقبل (3D)",
+    desc: "نحول أفكارك إلى واقع افتراضي ثلاثي الأبعاد، لتشاهد مطبخك أو خزانة ملابسك وتعدلها قبل البدء.",
     icon: <FaDraftingCompass />,
   },
   {
-    title: "التنفيذ بأعلى جودة",
-    desc: "تصنيع بخامات مختارة وتشطيب احترافي.",
+    title: "التصنيع والاتقان",
+    desc: "داخل مصانعنا، نستخدم أحدث التقنيات مع أجود الخامات لضمان منتج يجمع بين المتانة والجمال.",
     icon: <FaTools />,
   },
   {
-    title: "التسليم والتركيب",
-    desc: "تركيب دقيق وتسليم في الموعد.",
+    title: "التركيب والتسليم",
+    desc: "فريقنا المتخصص يقوم بالتركيب النهائي مع تنظيف الموقع، لنقدم لك مساحتك الجديدة جاهزة للاستخدام.",
     icon: <FaTruck />,
     cta: true,
   },
 ];
 
-const container = {
+const containerVariants = {
   hidden: {},
   show: {
-    transition: { staggerChildren: 0.25 },
+    transition: { staggerChildren: 0.3 },
   },
 };
 
-const item = {
-  hidden: { opacity: 0, y: 50 },
+const itemVariants = {
+  hidden: { opacity: 0, y: 30 },
   show: {
     opacity: 1,
     y: 0,
@@ -50,89 +51,112 @@ const item = {
 
 export default function WorkflowSection() {
   return (
-    <section className="relative py-32 px-6 bg-[#f6f1ea] overflow-hidden">
-      {/* SVG LINE – Desktop */}
-      <svg
-        className="hidden md:block absolute top-1/2 left-0 w-full h-32 -translate-y-1/2"
-        viewBox="0 0 1200 200"
-        fill="none"
-      >
-        <motion.path
-          d="M50 100 H1150"
-          stroke="#c4a484"
-          strokeWidth="2"
-          strokeDasharray="10 10"
-          initial={{ pathLength: 0 }}
-          whileInView={{ pathLength: 1 }}
+    <section
+      dir="rtl"
+      className="relative py-32 px-6 bg-[#fdfbf7] overflow-hidden"
+    >
+      {/* خلفية جمالية - دوائر ناعمة */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+        <div className="absolute top-[-10%] right-[-5%] w-[400px] h-[400px] bg-[#ac8918]/5 rounded-full blur-[80px]" />
+        <div className="absolute bottom-[-10%] left-[-5%] w-[500px] h-[500px] bg-[#ac8918]/5 rounded-full blur-[100px]" />
+      </div>
+
+      {/* الرأسية */}
+      <div className="relative z-10 text-center mb-28">
+        <motion.span
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          className="text-[#ac8918] font-bold tracking-widest text-sm uppercase mb-4 block"
+        >
+          خطواتنا المدروسة
+        </motion.span>
+        <motion.h2
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 2 }}
-        />
-      </svg>
+          className="text-4xl md:text-6xl font-black text-[#2d2216] mb-6"
+        >
+          كيف نحول <span className="text-[#ac8918]">حلمك</span> إلى واقع؟
+        </motion.h2>
+        <div className="w-24 h-1 bg-[#ac8918] mx-auto rounded-full" />
+      </div>
 
-      {/* Title */}
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 1 }}
-        className="text-center mb-24 relative z-10"
-      >
-        <h2 className="text-4xl md:text-5xl font-extrabold text-[#3e2f1c] mb-6">
-          رحلتك معنا في زوايا
-        </h2>
-        <p className="text-lg text-[#6b5b4a] max-w-2xl mx-auto">
-          خطوات واضحة، تجربة مريحة، ونتيجة تستحق.
-        </p>
-      </motion.div>
+      {/* الخط الرابط (Desktop) */}
+      <div className="hidden lg:block absolute top-[55%] left-0 w-full z-0">
+        <svg width="100%" height="100" viewBox="0 0 1200 100" fill="none">
+          <motion.path
+            d="M0 50 C 300 50, 600 50, 1200 50"
+            stroke="#ac8918"
+            strokeWidth="1"
+            strokeDasharray="12 12"
+            initial={{ pathLength: 0, opacity: 0 }}
+            whileInView={{ pathLength: 1, opacity: 0.3 }}
+            transition={{ duration: 1.5, ease: "easeInOut" }}
+          />
+        </svg>
+      </div>
 
-      {/* Steps */}
+      {/* شبكة الخطوات */}
       <motion.div
-        variants={container}
+        variants={containerVariants}
         initial="hidden"
         whileInView="show"
         viewport={{ once: true }}
-        className="relative z-10 max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-10"
+        className="relative z-10 max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12"
       >
         {steps.map((step, i) => (
-          <motion.div key={i} variants={item} className="relative group">
-            {/* Number */}
-            <span className="absolute -top-10 left-4 text-7xl font-black text-[#c4a484]/15">
-              {`0${i + 1}`}
-            </span>
+          <motion.div
+            key={i}
+            variants={itemVariants}
+            className="relative group"
+          >
+            {/* الرقم الخلفي */}
+            <div className="absolute -top-12 right-0 text-8xl font-black text-[#ac8918]/5 group-hover:text-[#ac8918]/10 transition-colors duration-500">
+              {i + 1}
+            </div>
 
-            {/* Card */}
-            <div className="relative bg-white/70 backdrop-blur-lg rounded-3xl p-10 text-center shadow-md group-hover:shadow-2xl transition">
-              <div className="mx-auto mb-6 w-16 h-16 rounded-full bg-[#c4a484]/20 flex items-center justify-center text-3xl text-[#a8845b]">
+            {/* البطاقة */}
+            <div className="relative flex flex-col items-center lg:items-start text-center lg:text-right">
+              {/* الأيقونة */}
+              <div className="w-20 h-20 rounded-[2rem] bg-white shadow-xl shadow-[#ac8918]/5 flex items-center justify-center text-3xl text-[#ac8918] mb-8 group-hover:bg-[#ac8918] group-hover:text-white transition-all duration-500 transform group-hover:rotate-[10deg]">
                 {step.icon}
               </div>
 
-              <h3 className="text-xl font-bold text-[#3e2f1c] mb-3">
+              {/* المحتوى */}
+              <h3 className="text-2xl font-bold text-[#2d2216] mb-4">
                 {step.title}
               </h3>
 
-              <p className="text-sm text-[#6b5b4a] leading-relaxed mb-6">
+              <p className="text-[#6b5b4a] leading-relaxed text-base md:text-lg opacity-80 group-hover:opacity-100 transition-opacity">
                 {step.desc}
               </p>
 
-              {/* CTA */}
+              {/* زر الحركة الأخير */}
               {step.cta && (
                 <motion.a
                   href="/contact"
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 }}
-                  className="inline-block mt-4 px-6 py-3 rounded-full bg-[#3e2f1c] text-white text-sm font-semibold hover:bg-[#2d2216] transition"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="mt-8 px-8 py-3 rounded-xl bg-[#ac8918] text-white font-bold shadow-lg shadow-[#ac8918]/30 transition-all flex items-center gap-2"
                 >
-                  ابدأ مشروعك الآن
+                  ابدأ رحلتك الآن
+                  <span className="text-xl">←</span>
                 </motion.a>
               )}
             </div>
+
+            {/* سهم الربط بين البطاقات (Desktop) */}
+            {i < steps.length - 1 && (
+              <div className="hidden lg:block absolute top-10 -left-6 text-[#ac8918]/20 text-4xl">
+                ←
+              </div>
+            )}
           </motion.div>
         ))}
       </motion.div>
 
-      {/* Mobile Timeline Line */}
-      <div className="md:hidden absolute left-1/2 top-0 h-full w-px bg-[#c4a484]/30" />
+      {/* خط الموبايل الجانبي */}
+      <div className="lg:hidden absolute right-10 top-[20%] h-[70%] w-[1px] bg-gradient-to-b from-transparent via-[#ac8918]/20 to-transparent" />
     </section>
   );
 }

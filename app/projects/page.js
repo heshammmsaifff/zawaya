@@ -3,15 +3,13 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { PhotoIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
+import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 
 export default function ProjectsPage() {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  /* =========================
-      Fetch Projects
-  ========================= */
   const fetchProjects = async () => {
     try {
       const { data, error } = await supabase
@@ -45,11 +43,16 @@ export default function ProjectsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 border-4 border-gray-200 border-t-[#634f0e] rounded-full animate-spin"></div>
-          <p className="text-gray-500 font-medium tracking-widest">
-            جاري تحميل المشاريع...
+      <div className="min-h-screen flex items-center justify-center bg-[#fdfbf7]">
+        <div className="flex flex-col items-center gap-6">
+          <div className="relative">
+            <div className="w-16 h-16 border-4 border-[#ac8918]/20 border-t-[#ac8918] rounded-full animate-spin"></div>
+            <div className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-[#ac8918]">
+              Z
+            </div>
+          </div>
+          <p className="text-[#3e2f1c] font-black tracking-widest animate-pulse">
+            جاري تحميل معرض الإبداع...
           </p>
         </div>
       </div>
@@ -57,92 +60,136 @@ export default function ProjectsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#fafafa] py-30 px-6 sm:px-12" dir="rtl">
-      {/* زر العودة السريع */}
-      <div className="mb-6">
-        <Link
-          href="/"
-          className="inline-flex items-center gap-2 text-gray-500 hover:text-[#634f0e] transition-colors group"
-        >
-          <ArrowRightIcon className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-          <span>العودة للرئيسية</span>
-        </Link>
+    <div
+      className="min-h-screen bg-[#fcfcfc] py-24 px-6 md:px-12 mt-10"
+      dir="rtl"
+    >
+      {/* عناصر خلفية ديكورية */}
+      <div className="fixed inset-0 pointer-events-none opacity-40">
+        <div className="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-[#ac8918]/5 to-transparent" />
       </div>
-      <div className="max-w-7xl mx-auto">
+
+      <div className="max-w-7xl mx-auto relative z-10">
+        {/* زر العودة */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="mb-12"
+        >
+          <Link
+            href="/"
+            className="inline-flex items-center gap-3 text-gray-400 hover:text-[#ac8918] transition-all group font-bold"
+          >
+            <div className="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center group-hover:border-[#ac8918] transition-colors">
+              <ArrowRightIcon className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </div>
+            <span>العودة للرئيسية</span>
+          </Link>
+        </motion.div>
+
         {/* Header Section */}
-        <div className="text-center mb-20 space-y-4">
-          <h1 className="text-4xl md:text-6xl font-black text-gray-900 tracking-tight">
-            معرض <span className="text-[#634f0e]">أعمالنا</span>
-          </h1>
-          <div className="w-24 h-1.5 bg-[#634f0e] mx-auto rounded-full"></div>
-          <p className="text-gray-500 max-w-2xl mx-auto text-lg leading-relaxed">
-            نستعرض هنا مجموعة من أحدث مشاريعنا التي تم تنفيذها بأعلى معايير
-            الجودة والاحترافية.
-          </p>
+        <div className="mb-20 space-y-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <h1 className="text-5xl md:text-7xl font-black text-[#3e2f1c] tracking-tight">
+              قصص <span className="text-[#ac8918]">نجاح زوايا</span>
+            </h1>
+            <div className="w-32 h-2 bg-[#ac8918] mt-4 rounded-full"></div>
+          </motion.div>
+
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="text-gray-500 max-w-2xl text-xl leading-relaxed font-medium"
+          >
+            كل مشروع هو رحلة فنية بدأناها بفكرة، وحوّلناها إلى واقع ينبض بالحياة
+            والجودة.
+          </motion.p>
         </div>
 
         {/* Projects Grid */}
-        {projects.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-            {projects.map((project) => (
-              <article
-                key={project.id}
-                className="group bg-white rounded-[2rem] overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 border border-gray-100 flex flex-col h-full"
-              >
-                {/* Image Gallery Preview */}
-                <div className="relative aspect-[4/3] overflow-hidden">
-                  {project.project_images &&
-                  project.project_images.length > 0 ? (
-                    <img
-                      src={
-                        project.project_images.sort(
-                          (a, b) => a.sort_order - b.sort_order
-                        )[0].image_url
-                      }
-                      alt={project.title}
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                    />
-                  ) : (
-                    <div className="w-full h-full bg-gray-100 flex items-center justify-center">
-                      <PhotoIcon className="w-12 h-12 text-gray-300" />
-                    </div>
-                  )}
-                  {/* Image Count Badge */}
-                  {project.project_images.length > 1 && (
-                    <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-gray-700 shadow-sm">
-                      +{project.project_images.length - 1} صور إضافية
-                    </div>
-                  )}
-                </div>
+        <AnimatePresence>
+          {projects.length > 0 ? (
+            <motion.div
+              layout
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12"
+            >
+              {projects.map((project, index) => (
+                <motion.article
+                  key={project.id}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  className="group bg-white rounded-[2.5rem] overflow-hidden shadow-xl shadow-gray-200/50 hover:shadow-2xl hover:shadow-[#ac8918]/10 transition-all duration-500 border border-gray-50 flex flex-col h-full"
+                >
+                  {/* Image Gallery Preview */}
+                  <div className="relative aspect-[16/11] overflow-hidden bg-gray-100">
+                    {project.project_images?.length > 0 ? (
+                      <img
+                        src={
+                          project.project_images.sort(
+                            (a, b) => a.sort_order - b.sort_order
+                          )[0].image_url
+                        }
+                        alt={project.title}
+                        className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <PhotoIcon className="w-12 h-12 text-gray-200" />
+                      </div>
+                    )}
 
-                {/* Project Info */}
-                <div className="p-8 flex flex-col flex-1">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-3 group-hover:text-[#634f0e] transition-colors">
-                    {project.title}
-                  </h2>
-                  <p className="text-gray-600 leading-relaxed text-sm line-clamp-3 mb-6">
-                    {project.description}
-                  </p>
+                    {/* Badge */}
+                    <div className="absolute top-6 right-6 bg-white/90 backdrop-blur-md px-4 py-2 rounded-2xl text-[10px] font-black text-[#3e2f1c] shadow-sm uppercase tracking-widest">
+                      {project.project_images?.length || 0} صور للمشروع
+                    </div>
+                  </div>
 
-                  <Link
-                    href={`/projects/${project.id}`}
-                    className="text-[#634f0e] font-bold text-sm flex items-center gap-2 cursor-pointer hover:gap-3 transition-all"
-                  >
-                    عرض التفاصيل
-                    <ArrowRightIcon className="w-4 h-4 rotate-180" />
-                  </Link>
-                </div>
-              </article>
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-40">
-            <PhotoIcon className="w-20 h-20 text-gray-200 mx-auto mb-6" />
-            <h3 className="text-xl font-medium text-gray-400">
-              لا توجد مشاريع منشورة حالياً.
-            </h3>
-          </div>
-        )}
+                  {/* Project Info */}
+                  <div className="p-10 flex flex-col flex-1 relative">
+                    <div className="absolute -top-10 left-10 w-20 h-20 bg-[#ac8918] rounded-3xl flex items-center justify-center text-white shadow-xl shadow-[#ac8918]/30 transform group-hover:-translate-y-2 transition-transform duration-500">
+                      <PhotoIcon className="w-8 h-8" />
+                    </div>
+
+                    <h2 className="text-2xl font-black text-[#3e2f1c] mb-4 group-hover:text-[#ac8918] transition-colors leading-tight">
+                      {project.title}
+                    </h2>
+                    <p className="text-gray-500 leading-relaxed text-sm line-clamp-2 mb-8 flex-1">
+                      {project.description}
+                    </p>
+
+                    <Link
+                      href={`/projects/${project.id}`}
+                      className="inline-flex items-center gap-3 text-[#3e2f1c] font-black text-sm group/btn"
+                    >
+                      <span className="relative">
+                        اكتشف المشروع
+                        <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#ac8918] group-hover/btn:w-full transition-all duration-300"></span>
+                      </span>
+                      <ArrowRightIcon className="w-5 h-5 rotate-180 group-hover/btn:translate-x-[-5px] transition-transform text-[#ac8918]" />
+                    </Link>
+                  </div>
+                </motion.article>
+              ))}
+            </motion.div>
+          ) : (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-center py-40 bg-white rounded-[3rem] border-2 border-dashed border-gray-100"
+            >
+              <PhotoIcon className="w-20 h-20 text-gray-100 mx-auto mb-6" />
+              <h3 className="text-2xl font-black text-gray-300 tracking-widest">
+                نعمل حالياً على توثيق مشاريع جديدة...
+              </h3>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );

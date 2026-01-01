@@ -1,7 +1,15 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { Phone, Home, ShoppingCart, Menu, X, LayoutGrid } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import {
+  Home,
+  ShoppingCart,
+  Menu,
+  X,
+  LayoutGrid,
+  MessageCircle,
+} from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 
 const Navbar = () => {
@@ -9,10 +17,9 @@ const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const navLinks = [
-    { name: "الرئيسية", href: "/", icon: <Home size={18} /> },
-    { name: "منتجاتنا", href: "/products", icon: <ShoppingCart size={18} /> },
-    { name: "مشاريعنا", href: "/projects", icon: <LayoutGrid size={18} /> },
-    // { name: "تواصل معنا", href: "/contact", icon: <Phone size={18} /> },
+    { name: "الرئيسية", href: "/", icon: <Home size={20} /> },
+    { name: "منتجاتنا", href: "/products", icon: <ShoppingCart size={20} /> },
+    { name: "مشاريعنا", href: "/projects", icon: <LayoutGrid size={20} /> },
   ];
 
   useEffect(() => {
@@ -21,146 +28,147 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // منع التمرير في الخلفية عند فتح القائمة
+  useEffect(() => {
+    if (menuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+  }, [menuOpen]);
+
   return (
     <>
-      {/* Navbar Header */}
       <header
         dir="rtl"
-        className={`fixed rounded-[20px] mx-5 my-5 top-0 left-0 right-0 z-[100] transition-all duration-500 ${
+        className={`fixed top-4 left-4 right-4 md:top-6 md:left-10 md:right-10 z-[100] transition-all duration-500 rounded-[24px] ${
           isScrolled
-            ? "py-3 bg-white/90 backdrop-blur-md shadow-lg border-b border-[#d4af37]/20"
-            : "py-5 bg-black/20 "
+            ? "bg-white/80 backdrop-blur-xl shadow-lg py-3 border border-white/20"
+            : "bg-transparent py-5"
         }`}
       >
         <div className="container mx-auto px-6 flex justify-between items-center">
-          {/* Logo Section */}
-          <Link href="/" className="relative group">
-            <div
-              className={`transition-all duration-500 ${
-                isScrolled ? "scale-90" : "scale-100"
-              }`}
-            >
-              {/* استبدل هذا بـ img الخاص بك - وضعت نصاً جمالياً كمثال */}
-              <div className="flex flex-col items-start leading-none">
-                <img
-                  src="/logo-nav-2.png"
-                  alt="Logo"
-                  className="w-12 md:w-12 rounded-2xl drop-shadow-2xl"
-                />
-              </div>
-            </div>
+          <Link
+            href="/"
+            className="transition-transform duration-300 hover:scale-105"
+          >
+            <img
+              src="/logo-nav-2.png"
+              alt="Logo"
+              className={`${isScrolled ? "h-10" : "h-12"} w-auto rounded-xl`}
+            />
           </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center gap-20">
+          <nav className="hidden lg:flex items-center gap-12 text-[#3e2f1c]">
+            {/* ... نفس روابط الديسك توب ... */}
             {navLinks.map((link) => (
               <Link
                 key={link.name}
                 href={link.href}
-                className={`group relative py-2 text-[20px] font-bold transition-colors duration-300 ${
-                  isScrolled ? "text-[#3d2b1f]" : "text-white"
+                className={`font-bold transition-all ${
+                  isScrolled ? "text-[#3e2f1c]" : "text-white"
                 }`}
               >
-                <span className="flex items-center gap-2">{link.name}</span>
-                {/* Underline Animation */}
-                <span className="absolute bottom-0 right-0 w-0 h-[2px] bg-[#d4af37] transition-all duration-300 group-hover:w-full"></span>
+                {link.name}
               </Link>
             ))}
           </nav>
 
-          {/* Action Button (Desktop) */}
-          <div className="hidden lg:block">
-            <Link
-              href="/contact"
-              className="bg-[#3d2b1f] text-[#d4af37] border border-[#d4af37] px-6 py-2 rounded-full text-sm font-bold hover:bg-[#d4af37] hover:text-[#3d2b1f] transition-all duration-300 shadow-xl"
-            >
-              تواصل معنا
-            </Link>
-          </div>
-
-          {/* Mobile Toggle */}
           <button
-            className={`lg:hidden p-2 rounded-lg transition-colors ${
-              isScrolled
-                ? "text-[#3d2b1f] bg-gray-100"
-                : "text-[#3d2b1f] bg-gray-100"
-            }`}
             onClick={() => setMenuOpen(true)}
+            className="lg:hidden p-3 rounded-2xl bg-[#3e2f1c] text-white shadow-lg"
           >
             <Menu size={24} />
           </button>
         </div>
       </header>
 
-      {/* Mobile Drawer (Side Menu) */}
-      <div
-        className={`fixed inset-0 z-[200] transition-visibility duration-300 ${
-          menuOpen ? "visible" : "invisible"
-        }`}
-      >
-        {/* Overlay */}
-        <div
-          className={`absolute inset-0 bg-[#3d2b1f]/60 backdrop-blur-sm transition-opacity duration-300 ${
-            menuOpen ? "opacity-100" : "opacity-0"
-          }`}
-          onClick={() => setMenuOpen(false)}
-        />
+      <AnimatePresence>
+        {menuOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setMenuOpen(false)}
+              className="fixed inset-0 bg-[#3e2f1c]/80 backdrop-blur-md z-[200]"
+            />
 
-        {/* Menu Content */}
-        <div
-          className={`absolute top-0 right-0 h-full w-[80%] max-w-sm bg-[#faf7f2] shadow-2xl transition-transform duration-500 ease-in-out transform ${
-            menuOpen ? "translate-x-0" : "translate-x-full"
-          }`}
-          dir="rtl"
-        >
-          <div className="flex flex-col h-full">
-            {/* Drawer Header */}
-            <div className="p-6 flex justify-between items-center border-b border-[#3d2b1f]/10 bg-[#3d2b1f] text-white">
-              <span className="font-bold text-lg tracking-widest uppercase">
-                القائمة
-              </span>
-              <button
-                onClick={() => setMenuOpen(false)}
-                className="p-2 hover:bg-white/10 rounded-full transition-colors"
-              >
-                <X size={24} />
-              </button>
-            </div>
-
-            {/* Drawer Links */}
-            <nav className="flex flex-col p-6 gap-4">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.name}
-                  href={link.href}
+            <motion.div
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              /* الحل هنا: h-screen و overflow-y-auto */
+              className="fixed top-0 right-0 h-screen h-[100dvh] w-[85%] max-w-sm bg-[#fcfcfc] z-[210] shadow-2xl flex flex-col"
+              dir="rtl"
+            >
+              {/* Header - ثابت في الأعلى */}
+              <div className="p-6 flex justify-between items-center border-b border-gray-100 shrink-0">
+                <img
+                  src="/logo-nav-2.png"
+                  alt="Logo"
+                  className="h-8 rounded-lg"
+                />
+                <button
                   onClick={() => setMenuOpen(false)}
-                  className="flex items-center gap-4 p-4 rounded-xl text-[#3d2b1f] hover:bg-[#3d2b1f] hover:text-[#d4af37] transition-all duration-300 group"
+                  className="p-2 bg-gray-100 rounded-xl"
                 >
-                  <span className="p-2 bg-gray-100 rounded-lg group-hover:bg-white/10 transition-colors">
-                    {link.icon}
-                  </span>
-                  <span className="font-bold text-lg">{link.name}</span>
-                </Link>
-              ))}
-            </nav>
-
-            {/* Drawer Footer */}
-            <div className="mt-auto p-8 border-t border-[#3d2b1f]/10">
-              <div className="bg-[#8b5e34]/10 p-6 rounded-2xl text-center">
-                <p className="text-[#3d2b1f] text-sm font-bold mb-3">
-                  نحن نساعدك في تصميم بيت أحلامك
-                </p>
-                <Link
-                  href="/contact"
-                  className="inline-block w-full py-3 bg-[#3d2b1f] text-white rounded-xl font-bold hover:bg-[#8b5e34] transition-colors"
-                >
-                  تواصل معنا الان
-                </Link>
+                  <X size={20} />
+                </button>
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
+
+              {/* سكرول داخلي للمحتوى فقط */}
+              <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar">
+                <nav className="p-6 space-y-3">
+                  {navLinks.map((link, index) => (
+                    <motion.div
+                      key={link.name}
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                    >
+                      <Link
+                        href={link.href}
+                        onClick={() => setMenuOpen(false)}
+                        className="flex items-center gap-4 p-4 rounded-2xl text-[#3e2f1c] bg-white border border-gray-50 shadow-sm"
+                      >
+                        <span className="p-2 bg-[#ac8918]/10 text-[#ac8918] rounded-lg">
+                          {link.icon}
+                        </span>
+                        <span className="font-bold text-lg">{link.name}</span>
+                      </Link>
+                    </motion.div>
+                  ))}
+                </nav>
+
+                {/* Footer داخل منطقة السكرول لضمان الوصول إليه */}
+                <div className="p-6 pt-0">
+                  <div className="bg-[#3e2f1c] p-6 rounded-[2rem] text-center shadow-xl">
+                    <MessageCircle
+                      className="mx-auto text-[#ac8918] mb-3"
+                      size={28}
+                    />
+                    <h4 className="text-white font-bold text-sm mb-1">
+                      جاهز لتصميم بيت أحلامك؟
+                    </h4>
+                    <p className="text-gray-400 text-xs mb-4">
+                      نحن هنا لتحويل خيالك إلى حقيقة.
+                    </p>
+                    <Link
+                      href="/contact"
+                      onClick={() => setMenuOpen(false)}
+                      className="block w-full py-3 bg-[#ac8918] text-white rounded-xl font-black text-sm"
+                    >
+                      تواصل معنا الآن
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </>
   );
 };
