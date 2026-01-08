@@ -2,12 +2,17 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaTimes, FaExternalLinkAlt, FaImages } from "react-icons/fa";
+import {
+  FaTimes,
+  FaExternalLinkAlt,
+  FaImages,
+  FaFolderOpen,
+} from "react-icons/fa";
 import { supabase } from "@/lib/supabaseClient";
 
 export default function ProjectsGallery() {
   const [active, setActive] = useState(null);
-  const [selectedImg, setSelectedImg] = useState(null); // حالة للتحكم في الصورة المعروضة داخل المودال
+  const [selectedImg, setSelectedImg] = useState(null);
   const [dbProjects, setDbProjects] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -50,7 +55,6 @@ export default function ProjectsGallery() {
     fetchLatest();
   }, []);
 
-  // دالة لفتح المودال وتعيين الصورة الأولية
   const openModal = (project) => {
     setActive(project);
     setSelectedImg(project.mainImage);
@@ -85,10 +89,10 @@ export default function ProjectsGallery() {
           </p>
         </motion.div>
 
-        {/* Gallery Grid */}
+        {/* Gallery Grid or Empty State */}
         {loading ? (
           <Skeleton />
-        ) : (
+        ) : dbProjects.length > 0 ? (
           <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12">
             {dbProjects.map((project) => (
               <motion.div
@@ -114,27 +118,46 @@ export default function ProjectsGallery() {
               </motion.div>
             ))}
           </div>
+        ) : (
+          /* Empty State - الحالة الجذابة عند عدم وجود مشاريع */
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="max-w-4xl mx-auto text-center py-20 px-8 rounded-[3rem] border-2 border-dashed border-[#ac8918]/20 bg-[#ac8918]/5"
+          >
+            <div className="w-24 h-24 bg-[#ac8918]/10 rounded-full flex items-center justify-center mx-auto mb-8 text-[#ac8918]">
+              <FaFolderOpen size={40} />
+            </div>
+            <h3 className="text-2xl md:text-3xl font-bold text-[#3e2f1c] mb-4">
+              نعمل حالياً على <span className="text-[#ac8918]">تحف فنية</span>{" "}
+              جديدة
+            </h3>
+            <p className="text-gray-500 text-lg max-w-lg mx-auto mb-8">
+              معرضنا يمتلئ دائماً بالإبداع. ترقبوا قريباً إضافة أحدث أعمالنا
+              التي ستغير مفهوم الفخامة.
+            </p>
+          </motion.div>
         )}
 
-        {/* Full Gallery CTA - التعديل المطلوب هنا */}
-        <div className="mt-24 text-center">
-          <motion.a
-            href="/projects"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="group relative inline-flex items-center gap-4 bg-[#ac8918] text-white py-6 px-12 rounded-2xl overflow-hidden shadow-2xl transition-all duration-500"
-          >
-            {/* طبقة الهوفر السوداء */}
-            <div className="absolute inset-0 bg-[#1a1a1a] w-0 group-hover:w-full transition-all duration-500 ease-out z-0" />
-
-            <span className="relative z-10 text-xl font-bold">
-              تصفح أرشيف مشاريعنا بالكامل
-            </span>
-            <span className="relative z-10 text-2xl group-hover:translate-x-[-8px] transition-transform">
-              ←
-            </span>
-          </motion.a>
-        </div>
+        {/* Full Gallery CTA */}
+        {dbProjects.length > 0 && (
+          <div className="mt-24 text-center">
+            <motion.a
+              href="/projects"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="group relative inline-flex items-center gap-4 bg-[#ac8918] text-white py-6 px-12 rounded-2xl overflow-hidden shadow-2xl transition-all duration-500"
+            >
+              <div className="absolute inset-0 bg-[#1a1a1a] w-0 group-hover:w-full transition-all duration-500 ease-out z-0" />
+              <span className="relative z-10 text-xl font-bold">
+                تصفح أرشيف مشاريعنا بالكامل
+              </span>
+              <span className="relative z-10 text-2xl group-hover:translate-x-[-8px] transition-transform">
+                ←
+              </span>
+            </motion.a>
+          </div>
+        )}
       </div>
 
       {/* Lightbox Overlay */}
@@ -159,7 +182,6 @@ export default function ProjectsGallery() {
                 <FaTimes size={20} />
               </button>
 
-              {/* الصورة الكبيرة المحدثة */}
               <div className="md:w-3/5 h-[350px] md:h-[600px] relative bg-gray-200">
                 <AnimatePresence mode="wait">
                   <motion.img
@@ -174,8 +196,7 @@ export default function ProjectsGallery() {
                 </AnimatePresence>
               </div>
 
-              {/* الجانب النصي والمصغرات */}
-              <div className="md:w-2/5 p-8 md:p-12 overflow-y-auto flex flex-col justify-between bg-white">
+              <div className="md:w-2/5 p-8 md:p-12 overflow-y-auto flex flex-col justify-between bg-white text-right">
                 <div>
                   <h2 className="text-3xl font-black text-[#3e2f1c] mb-4">
                     {active.title}
@@ -195,7 +216,7 @@ export default function ProjectsGallery() {
                         key={idx}
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
-                        onClick={() => setSelectedImg(img)} // تحديث الصورة عند الضغط
+                        onClick={() => setSelectedImg(img)}
                         className={`relative h-20 rounded-xl overflow-hidden cursor-pointer border-2 transition-all ${
                           selectedImg === img
                             ? "border-[#ac8918] shadow-lg"

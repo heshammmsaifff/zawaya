@@ -177,14 +177,14 @@ export default function Footer() {
         {/* Copyright */}
         <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-[11px] font-bold text-[#6b5b4a] uppercase tracking-widest">
           <p>© {currentYear} ZAWAYA INTERIORS — جميع الحقوق محفوظة</p>
-          <div className="flex gap-6">
+          {/* <div className="flex gap-6">
             <a href="#" className="hover:text-[#8b6b3d]">
               الشروط
             </a>
             <a href="#" className="hover:text-[#8b6b3d]">
               الخصوصية
             </a>
-          </div>
+          </div> */}
         </div>
       </div>
     </footer>

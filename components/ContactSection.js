@@ -192,7 +192,7 @@ export default function ContactSection() {
               </motion.button>
 
               <p className="text-center text-sm text-gray-400 mt-4">
-                ⏱ نعدك بالرد خلال أقل من 24 ساعة عمل.
+                ⏱ نعدك بالرد خلال أقل من 24 ساعة.
               </p>
             </form>
           </motion.div>

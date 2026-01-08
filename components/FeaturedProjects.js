@@ -6,17 +6,17 @@ import { FaArrowLeft } from "react-icons/fa";
 const projects = [
   {
     id: 1,
-    title: "مطبخ الترا مودرن - أبيض لؤلؤي",
+    title: "مطبخ الترا مودرن",
     category: "أنظمة المطابخ الذكية",
     desc: "دمج بين تكنولوجيا الإضاءة المخفية واستغلال الزوايا بأسلوب عصري.",
-    image: "/kitchen1.jpg",
+    image: "/k1.jpg",
   },
   {
     id: 2,
-    title: "خزانة الملابس الملكية",
+    title: "خزانة الملابس",
     category: "غرف الملابس (Dressing)",
     desc: "تصميم مفتوح يجمع بين الأناقة الفندقية والتقسيم الوظيفي المريح.",
-    image: "/closet1.jpg",
+    image: "/c3.jpg",
   },
 ];
 

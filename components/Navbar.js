@@ -44,7 +44,7 @@ const Navbar = () => {
         className={`fixed top-4 left-4 right-4 md:top-6 md:left-10 md:right-10 z-[100] transition-all duration-500 rounded-[24px] ${
           isScrolled
             ? "bg-white/80 backdrop-blur-xl shadow-lg py-3 border border-white/20"
-            : "bg-transparent py-5"
+            : "py-5 bg-black/20"
         }`}
       >
         <div className="container mx-auto px-6 flex justify-between items-center">
@@ -55,7 +55,9 @@ const Navbar = () => {
             <img
               src="/logo-nav-2.png"
               alt="Logo"
-              className={`${isScrolled ? "h-10" : "h-12"} w-auto rounded-xl`}
+              className={`${
+                isScrolled ? "h-10" : "bg-black h-12"
+              } w-auto rounded-xl px-4 transition-all`}
             />
           </Link>
 

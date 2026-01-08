@@ -152,9 +152,9 @@ export default function ProjectsPage() {
 
                   {/* Project Info */}
                   <div className="p-10 flex flex-col flex-1 relative">
-                    <div className="absolute -top-10 left-10 w-20 h-20 bg-[#ac8918] rounded-3xl flex items-center justify-center text-white shadow-xl shadow-[#ac8918]/30 transform group-hover:-translate-y-2 transition-transform duration-500">
+                    {/* <div className="absolute -top-10 left-10 w-20 h-20 bg-[#ac8918] rounded-3xl flex items-center justify-center text-white shadow-xl shadow-[#ac8918]/30 transform group-hover:-translate-y-2 transition-transform duration-500">
                       <PhotoIcon className="w-8 h-8" />
-                    </div>
+                    </div> */}
 
                     <h2 className="text-2xl font-black text-[#3e2f1c] mb-4 group-hover:text-[#ac8918] transition-colors leading-tight">
                       {project.title}
