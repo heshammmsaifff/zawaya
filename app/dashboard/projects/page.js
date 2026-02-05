@@ -77,7 +77,7 @@ export default function ProjectsDashboard() {
     const { data, error } = await supabase
       .from("projects")
       .select(
-        `id, title, description, project_images (id, image_url, sort_order)`
+        `id, title, description, project_images (id, image_url, sort_order)`,
       )
       .order("id", { ascending: false });
 
@@ -85,7 +85,7 @@ export default function ProjectsDashboard() {
       const formattedData = data?.map((p) => ({
         ...p,
         project_images: (p.project_images || ocean).sort(
-          (a, b) => a.sort_order - b.sort_order
+          (a, b) => a.sort_order - b.sort_order,
         ),
       }));
       setProjects(formattedData || []);
@@ -131,7 +131,7 @@ export default function ProjectsDashboard() {
         preview: img.image_url,
         isExisting: true,
         url: img.image_url,
-      }))
+      })),
     );
     setDeletedImages([]);
     window.scrollTo({ top: 0, behavior: "smooth" });

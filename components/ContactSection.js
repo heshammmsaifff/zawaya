@@ -98,14 +98,14 @@ export default function ContactSection() {
                 <ContactInfoItem
                   icon={<FaPhoneAlt />}
                   title="اتصل بنا"
-                  value="0109-214-1964"
-                  link="tel:01092141964"
+                  value="010-123-123-25"
+                  link="tel:01012312325"
                 />
                 <ContactInfoItem
                   icon={<FaWhatsapp className="text-green-600" />}
                   title="واتساب"
                   value="تحدث معنا مباشرة"
-                  link="https://wa.me/201092141964"
+                  link="https://wa.me/201012312325"
                 />
                 {/* <ContactInfoItem
                   icon={<FaMapMarkerAlt className="text-red-500" />}

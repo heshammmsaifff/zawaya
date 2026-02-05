@@ -111,16 +111,16 @@ export default function Footer() {
             </h4>
             <div className="space-y-5 text-sm font-bold">
               <a
-                href="tel:01092141964"
+                href="tel:01012312325"
                 className="flex items-center gap-4 hover:text-[#8b6b3d] transition-colors group"
               >
                 <div className="w-10 h-10 rounded-full bg-[#3e2f1c]/10 flex items-center justify-center group-hover:bg-[#8b6b3d] group-hover:text-white transition-all">
                   <FaPhoneAlt />
                 </div>
-                <span>0109-214-1964</span>
+                <span dir="ltr">010-123-123-25</span>
               </a>
               <a
-                href="https://wa.me/201092141964"
+                href="https://wa.me/201012312325"
                 target="_blank"
                 className="flex items-center gap-4 hover:text-[#8b6b3d] transition-colors group"
               >
@@ -164,7 +164,7 @@ export default function Footer() {
               />
               <SocialIcon
                 icon={<FaWhatsapp size={20} />}
-                href="https://wa.me/201092141964"
+                href="https://wa.me/201012312325"
                 color="hover:bg-[#25D366]"
               />
             </div>
