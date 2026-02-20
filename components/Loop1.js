@@ -24,7 +24,7 @@ const Loop1 = ({
         <motion.div
           className="flex items-center"
           animate={{
-            x: ["0%", "-50%"], // يتحرك من البداية حتى نصف القائمة لضمان التكرار السلس
+            x: ["0%", "50%"], // يتحرك من البداية حتى نصف القائمة لضمان التكرار السلس
           }}
           transition={{
             duration: speed,
@@ -33,7 +33,7 @@ const Loop1 = ({
           }}
         >
           {duplicatedTexts.map((text, i) => (
-            <div key={i} className="flex items-center" dir="rtl">
+            <div key={i} className="flex items-center" dir="ltr">
               <span className="text-white text-2xl md:text-3xl font-black mx-12 tracking-tight uppercase">
                 {text}
               </span>
