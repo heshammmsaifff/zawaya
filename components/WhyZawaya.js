@@ -55,7 +55,7 @@ export default function WhyZawaya() {
             لماذا يختارنا النخبة؟
           </span>
           <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-6 tracking-tight">
-            ما الذي يجعل <span className="text-[#ac8918]">"زوايا"</span> شريكك
+            ما الذي يجعل <span className="text-[#ac8918]">&quot;زوايا&quot;</span> شريكك
             المثالي؟
           </h2>
           <p className="text-gray-500 text-lg max-w-2xl mx-auto leading-relaxed">

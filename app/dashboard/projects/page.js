@@ -10,6 +10,9 @@ import {
   PhotoIcon,
   PencilSquareIcon,
   XMarkIcon,
+  SparklesIcon,
+  CircleStackIcon,
+  ArrowPathIcon,
 } from "@heroicons/react/24/outline";
 
 /* =========================
@@ -49,6 +52,12 @@ export default function ProjectsDashboard() {
   const [checking, setChecking] = useState(false);
   const [loading, setLoading] = useState(false);
   const [projects, setProjects] = useState([]);
+  const [cleaningStorage, setCleaningStorage] = useState(false);
+  const [storageUsage, setStorageUsage] = useState({
+    totalBytes: 0,
+    totalFiles: 0,
+    loading: false,
+  });
 
   // Form State
   const [editingId, setEditingId] = useState(null); // ID المشروع الجاري تعديله
@@ -63,13 +72,38 @@ export default function ProjectsDashboard() {
   const checkPassword = async () => {
     setChecking(true);
     try {
-      const { data } = await supabase.from("pass").select("password").single();
-      if (data?.password === password) setAuthorized(true);
-      else alert("❌ كلمة المرور غير صحيحة");
+      const { data: isValid, error } = await supabase.rpc(
+        "verify_admin_password",
+        { input_password: password }
+      );
+      if (!error && isValid) {
+        setAuthorized(true);
+      } else {
+        alert("❌ كلمة المرور غير صحيحة");
+      }
     } catch (e) {
       alert("خطأ في الاتصال");
     } finally {
       setChecking(false);
+    }
+  };
+
+  const fetchStorageUsage = async () => {
+    setStorageUsage((prev) => ({ ...prev, loading: true }));
+    try {
+      const { data, error } = await supabase.rpc("get_storage_usage");
+      if (!error && data) {
+        setStorageUsage({
+          totalBytes: Number(data.total_bytes) || 0,
+          totalFiles: Number(data.total_files) || 0,
+          loading: false,
+        });
+      } else {
+        setStorageUsage((prev) => ({ ...prev, loading: false }));
+      }
+    } catch (err) {
+      console.error("Error fetching storage usage:", err);
+      setStorageUsage((prev) => ({ ...prev, loading: false }));
     }
   };
 
@@ -84,7 +118,7 @@ export default function ProjectsDashboard() {
     if (!error) {
       const formattedData = data?.map((p) => ({
         ...p,
-        project_images: (p.project_images || ocean).sort(
+        project_images: (p.project_images || []).sort(
           (a, b) => a.sort_order - b.sort_order,
         ),
       }));
@@ -93,7 +127,10 @@ export default function ProjectsDashboard() {
   };
 
   useEffect(() => {
-    if (authorized) fetchProjects();
+    if (authorized) {
+      fetchProjects();
+      fetchStorageUsage();
+    }
   }, [authorized]);
 
   const addImages = (files) => {
@@ -139,10 +176,11 @@ export default function ProjectsDashboard() {
 
   const compressAndUpload = async (file, projectId, order) => {
     const options = {
-      maxSizeMB: 0.5, // ضغط عالٍ (أقل من نصف ميجا)
-      maxWidthOrHeight: 1280,
+      maxSizeMB: 2.5, // رفع الحجم إلى 2.5 ميجا للحفاظ على التفاصيل الفائقة بدون تشويش
+      maxWidthOrHeight: 2560, // أبعاد 2K فائقة الوضوح للشاشات الحديثة والريتينا
       useWebWorker: true,
       fileType: "image/webp",
+      initialQuality: 0.9, // جودة 90% ممتازة جداً ونقية
     };
 
     try {
@@ -212,6 +250,7 @@ export default function ProjectsDashboard() {
       alert("✅ تم الحفظ بنجاح");
       resetForm();
       await fetchProjects();
+      await fetchStorageUsage();
     } catch (err) {
       alert("❌ خطأ: " + err.message);
     } finally {
@@ -229,10 +268,85 @@ export default function ProjectsDashboard() {
       }
       await supabase.from("projects").delete().eq("id", project.id);
       await fetchProjects();
+      await fetchStorageUsage();
     } catch (e) {
       alert("فشل الحذف");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const cleanUnusedImages = async () => {
+    setCleaningStorage(true);
+    try {
+      // 1. استدعاء دالة قاعدة البيانات لجلب الصور غير المرتبطة بأي مشروع
+      const { data: unusedFiles, error: rpcErr } = await supabase.rpc(
+        "get_unused_project_images"
+      );
+
+      let filesToDelete = unusedFiles;
+
+      // في حال تعذر استدعاء الدالة، استخدام فحص بديل مباشر عبر Storage
+      if (rpcErr || !filesToDelete) {
+        const { data: activeImages } = await supabase
+          .from("project_images")
+          .select("image_url");
+
+        const activePaths = new Set(
+          (activeImages || [])
+            .map((img) => getStoragePath(img.image_url))
+            .filter(Boolean)
+        );
+
+        const { data: rootItems } = await supabase.storage
+          .from("projects")
+          .list("");
+
+        const foundUnused = [];
+        for (const item of rootItems || []) {
+          if (item.id === null) {
+            // مجلد مشروع
+            const { data: folderFiles } = await supabase.storage
+              .from("projects")
+              .list(item.name);
+            for (const file of folderFiles || []) {
+              const fullPath = `${item.name}/${file.name}`;
+              if (!activePaths.has(fullPath)) {
+                foundUnused.push(fullPath);
+              }
+            }
+          } else {
+            if (!activePaths.has(item.name)) {
+              foundUnused.push(item.name);
+            }
+          }
+        }
+        filesToDelete = foundUnused;
+      }
+
+      if (!filesToDelete || filesToDelete.length === 0) {
+        alert("✨ مساحة التخزين نظيفة تماماً! لا توجد أي صور غير مستخدمة.");
+        return;
+      }
+
+      const confirmed = confirm(
+        `⚠️ تم العثور على ${filesToDelete.length} صورة غير مستخدمة في Supabase Storage (ليست مرتبطة بأي مشروع).\n\nهل تريد حذفها نهائياً لتفريغ المساحة؟`
+      );
+
+      if (!confirmed) return;
+
+      const { error: delErr } = await supabase.storage
+        .from("projects")
+        .remove(filesToDelete);
+
+      if (delErr) throw delErr;
+
+      alert(`✅ تم حذف ${filesToDelete.length} صورة غير مستخدمة بنجاح وتحرير مساحة التخزين!`);
+      await fetchStorageUsage();
+    } catch (err) {
+      alert("❌ خطأ أثناء تنظيف الصور: " + (err.message || err));
+    } finally {
+      setCleaningStorage(false);
     }
   };
 
@@ -271,18 +385,134 @@ export default function ProjectsDashboard() {
     );
   }
 
+  // Storage Calculations (1 GB = 1024 MB = 1,073,741,824 Bytes)
+  const TOTAL_CAPACITY_BYTES = 1024 * 1024 * 1024;
+  const usedMB = (storageUsage.totalBytes / (1024 * 1024)).toFixed(2);
+  const usedPercent = Math.min(
+    100,
+    Math.max(0, (storageUsage.totalBytes / TOTAL_CAPACITY_BYTES) * 100)
+  );
+  const percentDisplay =
+    storageUsage.totalBytes > 0 && usedPercent < 0.1
+      ? "< 0.1%"
+      : `${usedPercent.toFixed(1)}%`;
+  const remainingMB = Math.max(
+    0,
+    1024 - storageUsage.totalBytes / (1024 * 1024)
+  ).toFixed(1);
+
   return (
     <div className="min-h-screen bg-[#f8f9fa] py-8 pt-30 px-4" dir="rtl">
       <div className="max-w-4xl mx-auto space-y-10">
         {/* Header */}
-        <div className="flex justify-between items-center bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100">
-          <h1 className="text-2xl font-black text-gray-800">إدارة المعرض</h1>
-          <button
-            onClick={() => window.location.reload()}
-            className="p-3 bg-gray-50 text-gray-400 rounded-xl hover:text-red-500"
-          >
-            <ArrowRightOnRectangleIcon className="w-6 h-6" />
-          </button>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-md shadow-sm border border-gray-100">
+          <div>
+            <h1 className="text-2xl font-black text-gray-800">إدارة المعرض</h1>
+            <p className="text-xs text-gray-400 mt-1">
+              إضافة وتعديل المشاريع وتنظيف وسائط التخزين
+            </p>
+          </div>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={cleanUnusedImages}
+              disabled={cleaningStorage}
+              title="فحص وحذف أي صور غير مرتبطة بأي مشروع في Supabase"
+              className="flex items-center gap-2 px-4 py-2.5 bg-amber-50 hover:bg-amber-100 text-[#634f0e] border border-amber-200 rounded-md text-xs font-bold transition-all disabled:opacity-50 active:scale-95 shadow-sm cursor-pointer"
+            >
+              {cleaningStorage ? (
+                <Spinner />
+              ) : (
+                <SparklesIcon className="w-4 h-4 text-[#634f0e]" />
+              )}
+              <span>
+                {cleaningStorage
+                  ? "جاري الفحص والتنظيف..."
+                  : "تنظيف الصور غير المستخدمة"}
+              </span>
+            </button>
+            <button
+              onClick={() => window.location.reload()}
+              title="تسجيل الخروج"
+              className="p-2.5 bg-gray-50 text-gray-400 rounded-md hover:text-red-500 border border-gray-100 transition-colors"
+            >
+              <ArrowRightOnRectangleIcon className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+
+        {/* Storage Capacity Indicator Card */}
+        <div className="bg-white p-6 rounded-md shadow-sm border border-gray-100">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-md bg-amber-50 border border-amber-100/80 text-[#634f0e] flex items-center justify-center shrink-0">
+                <CircleStackIcon className="w-5 h-5" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h2 className="text-sm font-bold text-gray-800">
+                    سعة التخزين السحابي
+                  </h2>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-sm bg-gray-100 text-gray-600">
+                    1 جيجابايت
+                  </span>
+                </div>
+                <p className="text-xs text-gray-400 mt-0.5">
+                  مساحة ملفات وصور مشاريع المعرض
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 self-stretch sm:self-auto justify-between sm:justify-end">
+              <div className="text-right">
+                <div className="text-sm font-black text-gray-900 tracking-tight">
+                  {usedMB} ميجابايت{" "}
+                  <span className="text-xs font-normal text-gray-400">
+                    / 1,024 ميجابايت
+                  </span>
+                </div>
+                <div className="text-[11px] text-gray-400 text-left sm:text-right">
+                  المتبقي: {remainingMB} ميجابايت
+                </div>
+              </div>
+              <button
+                onClick={fetchStorageUsage}
+                disabled={storageUsage.loading}
+                title="تحديث مؤشر المساحة"
+                className="p-2 text-gray-400 hover:text-[#634f0e] hover:bg-amber-50/50 rounded-md border border-gray-100 transition-all cursor-pointer disabled:opacity-50"
+              >
+                <ArrowPathIcon
+                  className={`w-4 h-4 ${
+                    storageUsage.loading ? "animate-spin text-[#634f0e]" : ""
+                  }`}
+                />
+              </button>
+            </div>
+          </div>
+
+          {/* Progress Bar Track & Fill */}
+          <div className="space-y-2">
+            <div className="w-full bg-gray-100 rounded-md h-3.5 p-0.5 overflow-hidden border border-gray-200/60 shadow-inner">
+              <div
+                className="bg-gradient-to-l from-[#ac8918] via-[#8c6b12] to-[#634f0e] h-full rounded-sm transition-all duration-500 shadow-sm"
+                style={{
+                  width: `${Math.min(100, Math.max(usedPercent, storageUsage.totalBytes > 0 ? 0.8 : 0))}%`,
+                }}
+              />
+            </div>
+
+            <div className="flex justify-between items-center text-xs text-gray-500 pt-1">
+              <div className="flex items-center gap-2 font-medium">
+                <span>نسبة الاستهلاك:</span>
+                <span className="font-bold text-[#634f0e] bg-amber-50 px-2 py-0.5 rounded-sm border border-amber-200/40 text-[11px]">
+                  {percentDisplay}
+                </span>
+              </div>
+              <span className="text-[11px] text-gray-400 font-medium">
+                {storageUsage.totalFiles}{" "}
+                {storageUsage.totalFiles === 1 ? "صورة مخزنة" : "صور مخزنة"}
+              </span>
+            </div>
+          </div>
         </div>
 
         {/* Add/Edit Form */}

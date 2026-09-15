@@ -2,13 +2,21 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
-import { PhotoIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
+import {
+  PhotoIcon,
+  ArrowRightIcon,
+  ArrowsPointingOutIcon,
+  ArrowLeftIcon,
+} from "@heroicons/react/24/outline";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import ImageLightbox from "@/components/ImageLightbox";
 
 export default function ProjectsPage() {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [lightboxProject, setLightboxProject] = useState(null);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
 
   const fetchProjects = async () => {
     try {
@@ -29,7 +37,20 @@ export default function ProjectsPage() {
         .order("id", { ascending: false });
 
       if (error) throw error;
-      setProjects(data || []);
+
+      const formatted = (data || []).map((p) => {
+        const sorted = (p.project_images || []).sort(
+          (a, b) => a.sort_order - b.sort_order
+        );
+        return {
+          ...p,
+          project_images: sorted,
+          allImages: sorted.map((img) => img.image_url),
+          mainImage: sorted[0]?.image_url || "/placeholder.jpg",
+        };
+      });
+
+      setProjects(formatted);
     } catch (error) {
       console.error("Error fetching projects:", error.message);
     } finally {
@@ -40,6 +61,12 @@ export default function ProjectsPage() {
   useEffect(() => {
     fetchProjects();
   }, []);
+
+  const openLightbox = (project, index = 0) => {
+    if (!project.allImages || project.allImages.length === 0) return;
+    setLightboxProject(project);
+    setLightboxIndex(index);
+  };
 
   if (loading) {
     return (
@@ -93,6 +120,9 @@ export default function ProjectsPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
           >
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#ac8918]/10 text-[#ac8918] font-bold text-xs uppercase tracking-widest mb-3">
+              <span>أعمال نفخر بها</span>
+            </div>
             <h1 className="text-5xl md:text-7xl font-black text-[#3e2f1c] tracking-tight">
               قصص <span className="text-[#ac8918]">نجاح زوايا</span>
             </h1>
@@ -106,7 +136,7 @@ export default function ProjectsPage() {
             className="text-gray-500 max-w-2xl text-xl leading-relaxed font-medium"
           >
             كل مشروع هو رحلة فنية بدأناها بفكرة، وحوّلناها إلى واقع ينبض بالحياة
-            والجودة.
+            والجودة بأدق التفاصيل.
           </motion.p>
         </div>
 
@@ -124,19 +154,18 @@ export default function ProjectsPage() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="group bg-white rounded-[2.5rem] overflow-hidden shadow-xl shadow-gray-200/50 hover:shadow-2xl hover:shadow-[#ac8918]/10 transition-all duration-500 border border-gray-50 flex flex-col h-full"
+                  className="group bg-white rounded-md overflow-hidden shadow-xl shadow-gray-200/50 hover:shadow-2xl hover:shadow-[#ac8918]/15 transition-all duration-500 border border-gray-100 flex flex-col h-full hover:-translate-y-2"
                 >
                   {/* Image Gallery Preview */}
-                  <div className="relative aspect-[16/11] overflow-hidden bg-gray-100">
+                  <div
+                    className="relative aspect-[16/11] overflow-hidden bg-gray-100 cursor-pointer"
+                    onClick={() => openLightbox(project, 0)}
+                  >
                     {project.project_images?.length > 0 ? (
                       <img
-                        src={
-                          project.project_images.sort(
-                            (a, b) => a.sort_order - b.sort_order
-                          )[0].image_url
-                        }
+                        src={project.mainImage}
                         alt={project.title}
-                        className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                        className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
@@ -145,34 +174,55 @@ export default function ProjectsPage() {
                     )}
 
                     {/* Badge */}
-                    <div className="absolute top-6 right-6 bg-white/90 backdrop-blur-md px-4 py-2 rounded-2xl text-[10px] font-black text-[#3e2f1c] shadow-sm uppercase tracking-widest">
-                      {project.project_images?.length || 0} صور للمشروع
+                    <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-md text-xs font-black text-[#3e2f1c] shadow-sm flex items-center gap-1.5">
+                      <PhotoIcon className="w-4 h-4 text-[#ac8918]" />
+                      <span>{project.project_images?.length || 0} صور</span>
+                    </div>
+
+                    {/* زر المعاينة الفورية عند التحويم */}
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openLightbox(project, 0);
+                        }}
+                        className="px-4 py-3 bg-white/90 hover:bg-[#ac8918] hover:text-white text-[#3e2f1c] rounded-md shadow-2xl backdrop-blur-md transition-all flex items-center gap-2 font-bold text-sm transform scale-90 group-hover:scale-100"
+                      >
+                        <ArrowsPointingOutIcon className="w-5 h-5" />
+                        <span>فتح الصور كاملة</span>
+                      </button>
                     </div>
                   </div>
 
                   {/* Project Info */}
-                  <div className="p-10 flex flex-col flex-1 relative">
-                    {/* <div className="absolute -top-10 left-10 w-20 h-20 bg-[#ac8918] rounded-3xl flex items-center justify-center text-white shadow-xl shadow-[#ac8918]/30 transform group-hover:-translate-y-2 transition-transform duration-500">
-                      <PhotoIcon className="w-8 h-8" />
-                    </div> */}
-
-                    <h2 className="text-2xl font-black text-[#3e2f1c] mb-4 group-hover:text-[#ac8918] transition-colors leading-tight">
+                  <div className="p-8 md:p-10 flex flex-col flex-1 relative">
+                    <h2 className="text-2xl font-black text-[#3e2f1c] mb-3 group-hover:text-[#ac8918] transition-colors leading-tight">
                       {project.title}
                     </h2>
                     <p className="text-gray-500 leading-relaxed text-sm line-clamp-2 mb-8 flex-1">
                       {project.description}
                     </p>
 
-                    <Link
-                      href={`/projects/${project.id}`}
-                      className="inline-flex items-center gap-3 text-[#3e2f1c] font-black text-sm group/btn"
-                    >
-                      <span className="relative">
-                        اكتشف المشروع
-                        <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#ac8918] group-hover/btn:w-full transition-all duration-300"></span>
-                      </span>
-                      <ArrowRightIcon className="w-5 h-5 rotate-180 group-hover/btn:translate-x-[-5px] transition-transform text-[#ac8918]" />
-                    </Link>
+                    <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                      <button
+                        onClick={() => openLightbox(project, 0)}
+                        className="text-xs font-bold text-gray-500 hover:text-[#ac8918] transition-colors flex items-center gap-1.5"
+                      >
+                        <ArrowsPointingOutIcon className="w-4 h-4 text-[#ac8918]" />
+                        <span>معاينة الصور ({project.project_images?.length || 0})</span>
+                      </button>
+
+                      <Link
+                        href={`/projects/${project.id}`}
+                        className="inline-flex items-center gap-2 text-[#3e2f1c] font-black text-sm group/btn hover:text-[#ac8918] transition-colors"
+                      >
+                        <span className="relative">
+                          استعراض المشروع
+                          <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#ac8918] group-hover/btn:w-full transition-all duration-300"></span>
+                        </span>
+                        <ArrowLeftIcon className="w-4 h-4 group-hover/btn:-translate-x-1 transition-transform text-[#ac8918]" />
+                      </Link>
+                    </div>
                   </div>
                 </motion.article>
               ))}
@@ -191,6 +241,17 @@ export default function ProjectsPage() {
           )}
         </AnimatePresence>
       </div>
+
+      {/* عارض الصور المتقدم بالشاشة الكاملة */}
+      {lightboxProject && (
+        <ImageLightbox
+          isOpen={!!lightboxProject}
+          images={lightboxProject.allImages}
+          initialIndex={lightboxIndex}
+          title={lightboxProject.title}
+          onClose={() => setLightboxProject(null)}
+        />
+      )}
     </div>
   );
 }

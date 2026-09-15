@@ -64,7 +64,7 @@ export default function FeaturedProjects() {
               className="group cursor-pointer"
             >
               {/* Image Container */}
-              <div className="relative h-[400px] md:h-[500px] overflow-hidden rounded-[40px] shadow-2xl">
+              <div className="relative h-[400px] md:h-[500px] overflow-hidden rounded-md shadow-2xl">
                 <img
                   src={project.image}
                   alt={project.title}
@@ -84,7 +84,7 @@ export default function FeaturedProjects() {
                       </p>
                       <h4 className="text-2xl font-bold">{project.title}</h4>
                     </div>
-                    <div className="w-14 h-14 bg-[#ac8918] rounded-full flex items-center justify-center text-white text-xl">
+                    <div className="w-12 h-12 bg-[#ac8918] rounded-md flex items-center justify-center text-white text-xl">
                       <FaArrowLeft className="rotate-45 group-hover:rotate-0 transition-transform" />
                     </div>
                   </motion.div>
@@ -124,7 +124,7 @@ export default function FeaturedProjects() {
             <span className="text-xl font-bold text-gray-900 group-hover:text-[#ac8918] transition-colors">
               اكتشف المزيد عن خدماتنا
             </span>
-            <div className="w-12 h-12 border-2 border-[#ac8918] rounded-full flex items-center justify-center text-[#ac8918] group-hover:bg-[#ac8918] group-hover:text-white transition-all">
+            <div className="w-11 h-11 border-2 border-[#ac8918] rounded-md flex items-center justify-center text-[#ac8918] group-hover:bg-[#ac8918] group-hover:text-white transition-all">
               <FaArrowLeft />
             </div>
           </motion.a>

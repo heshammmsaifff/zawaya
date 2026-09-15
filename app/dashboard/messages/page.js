@@ -23,8 +23,11 @@ export default function MessagesDashboard() {
   const checkPassword = async () => {
     setChecking(true);
     try {
-      const { data } = await supabase.from("pass").select("password").single();
-      if (data?.password === password) {
+      const { data: isValid, error } = await supabase.rpc(
+        "verify_admin_password",
+        { input_password: password }
+      );
+      if (!error && isValid) {
         setAuthorized(true);
       } else {
         alert("❌ كلمة المرور غير صحيحة");
